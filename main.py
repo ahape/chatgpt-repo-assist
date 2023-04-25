@@ -1,5 +1,5 @@
 #!/usr/local/bin/python3.11
-import os, sys, configparser
+import os, sys, configparser, argparse
 
 config = configparser.ConfigParser()
 config.read("secrets.config")
@@ -9,18 +9,19 @@ from langchain.vectorstores import DeepLake
 from langchain.document_loaders import TextLoader
 from langchain.text_splitter import CharacterTextSplitter
 
-arg = sys.argv[-1]
+arg_parser = argparse.ArgumentParser()
+arg_parser.add_argument("-i", "--init", action="store_true")
+arg_parser.add_argument("-r", "--repo")
+args = arg_parser.parse_args()
+
+os.environ["OPENAI_API_KEY"] = config["openai"]["api_key"]
+os.environ["ACTIVELOOP_TOKEN"] = config["activeloop"]["token"]
 
 def init():
-  os.environ["OPENAI_API_KEY"] = config["openai"]["api_key"]
-  os.environ["ACTIVELOOP_TOKEN"] = config["activeloop"]["token"]
-
   embeddings = OpenAIEmbeddings()
-
-  root_dir = os.environ.get("ROOT", "/Users/alanhape/Downloads/roslyn-tools")
   docs = []
 
-  for dirpath, dirnames, filenames in os.walk(root_dir):
+  for dirpath, dirnames, filenames in os.walk(args.repo):
     for file in filenames:
       try: 
         loader = TextLoader(os.path.join(dirpath, file), encoding="utf-8")
@@ -29,6 +30,7 @@ def init():
         print(e, file)
 
   print(f"{len(docs)} docs collected")
+  print("Next: Splitting text into chunks")
 
   text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
   texts = text_splitter.split_documents(docs)
@@ -40,9 +42,9 @@ def init():
   print("Next: Performing the indexing process")
 
   db = DeepLake(
-      dataset_path=dataset_path,
-      embedding_function=embeddings,
-      public=True)
+    dataset_path=dataset_path,
+    embedding_function=embeddings)
+  #  public=True)
   db.add_documents(texts)
 
 def main():
@@ -50,7 +52,7 @@ def main():
   print(db)
 
 if __name__ == "__main__":
-  if arg == "init":
+  if args.init:
     init()
   else:
     main()
