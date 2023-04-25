@@ -15,7 +15,7 @@ arg_parser.add_argument("-i", "--init", action="store_true")
 arg_parser.add_argument("-r", "--repo")
 args = arg_parser.parse_args()
 
-os.environ["OPENAI_API_KEY"] = config["openai"]["api_key"]
+os.environ["OPENAI_API_KEY"] = config["openai"]["apikey"]
 os.environ["ACTIVELOOP_TOKEN"] = config["activeloop"]["token"]
 
 def init():
