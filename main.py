@@ -1,10 +1,5 @@
 #!/usr/local/bin/python3.11
 
-"""
-Script implementing this how-to article:
-  https://www.activeloop.ai/resources/lang-chain-gpt-4-for-code-understanding-twitter-algorithm/
-"""
-
 import os, sys, configparser, argparse
 
 config = configparser.ConfigParser()
