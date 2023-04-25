@@ -1,5 +1,0 @@
-Blog post:
-
-  https://www.activeloop.ai/resources/lang-chain-gpt-4-for-code-understanding-twitter-algorithm/
-
-
